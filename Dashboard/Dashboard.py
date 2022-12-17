@@ -7,7 +7,7 @@ pn.extension()
 # the plotting libs
 import holoviews as hv
 from holoviews.operation.datashader import inspect, rasterize
-from  holoviews.element.tiles import ESRI
+from holoviews.element.tiles import ESRI
 # provides the color maps
 import colorcet as cc
 
@@ -18,14 +18,13 @@ hv.extension('bokeh')
 # The options for the operators and thier colour maps
 COLORS = {"Operator A": cc.kr, "Operator B": cc.kg, "Operator C": cc.kb}
 PLOT_WIDTH = 900
-PLOT_HEIGHT= 900
+PLOT_HEIGHT= 700
 
 RSRP_data = pd.read_parquet("RSRP_data_viz.parq")
 
 # Using the map tiles provided by Esri. OpenStreetMaps can be used as well
 esri = ESRI().redim(x="Longtitude", y="Latitude").opts(alpha=0.2, width=PLOT_WIDTH, height=PLOT_HEIGHT, bgcolor='black')
 # osm = OSM().redim(x="Longtitude", y="Latitude").opts(alpha=0.2, width=900, height=700, bgcolor='black')
-
 
 def hour_map(hours_range, days_range):
     start_hour, end_hour = hours_range
@@ -40,6 +39,7 @@ def hour_map(hours_range, days_range):
     rastered = rasterize(time_range_points).opts(cmap=cc.fire, cnorm="eq_hist", width=PLOT_WIDTH, height=PLOT_HEIGHT)
     hour_highlight = inspect(rastered).opts(marker="o", size=10, fill_alpha=0, color='white', tools=["hover"])
     return esri * rastered * hour_highlight
+
 
 def operator_map(operator_name):
     df_operator = RSRP_data[RSRP_data["RadioOperatorName"] == operator_name].copy()
