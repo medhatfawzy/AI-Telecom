@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from pandasql import sqldf
 # The server and widgets library
 import panel as pn
@@ -19,7 +18,7 @@ hv.extension('bokeh')
 
 # The options for the operators and thier colour maps
 COLORS = {"Operator A": cc.kr, "Operator B": cc.kg, "Operator C": cc.kb}
-AGGS = {"Average": np.mean, "Minimum": np.min, "Maximum":np.max, "90th Percentile":np.percentile}
+AGGS = {"Average": pd.DataFrame.mean, "Minimum": pd.DataFrame.min, "Maximum":pd.DataFrame.max, "90th Percentile":pd.DataFrame.quantile}
 PLOT_WIDTH = 900
 PLOT_HEIGHT= 700
 
@@ -73,11 +72,11 @@ def RSRP_bar_plot(operator_name, aggregator_method):
     """"Plots a bar chart of RSRP per device type per operator with an option to choose the aggregation method of RSRP (avg, min, max and 90th Percentile)."""
     df_operator = RSRP_data[RSRP_data["RadioOperatorName"] == operator_name]
     if(aggregator_method=="90th Percentile"):
-        bars = hv.Bars(df_operator, "DeviceManufacturer", "RSRP").aggregate(function=AGGS[aggregator_method], q=90)
+        bars = hv.Bars(df_operator, "DeviceManufacturer", "RSRP").aggregate(function=AGGS[aggregator_method], q=0.9)
     else:
         bars = hv.Bars(df_operator, "DeviceManufacturer", "RSRP").aggregate(function=AGGS[aggregator_method])
     
-    bars.opts(width=PLOT_WIDTH, height=PLOT_HEIGHT, xrotation=45, labelled=["y"], invert_yaxis=True)
+    bars.opts(width=PLOT_WIDTH, height=PLOT_HEIGHT, xrotation=45, labelled=["y"], invert_yaxis=True, color=COLORS[operator_name][-10])
     return bars
 
 
@@ -85,22 +84,22 @@ hour_select = pn.widgets.IntRangeSlider(name="Hours: ", start=0, end=23, value=(
 day_select = pn.widgets.IntRangeSlider(name="Days: ", start=1, end=4, value=(2,3))
 Time_range_map = pn.bind(time_range_plot, hours_range=hour_select, days_range=day_select)
 
-operator_select = pn.widgets.RadioButtonGroup(options=list(COLORS.keys()))
+operator_select = pn.widgets.Select(name="Operator Select:",options=list(COLORS.keys()))
 
 Operators_maps = pn.bind(operator_plot, operator_name=operator_select)
 
 Traffic_maps = pn.bind(traffic_plot, operator_name=operator_select)
 
-aggregator_select = pn.widgets.RadioButtonGroup(options=list(AGGS.keys()))
+aggregator_select = pn.widgets.Select(name="Aggregator Type:", options=list(AGGS.keys()))
 
 RSRP_values_maps = pn.bind(RSRP_bar_plot, operator_name=operator_select, aggregator_method=aggregator_select)
 
 template = pn.template.FastListTemplate(title="Telecom Analysis",
-                                        main=[pn.Row(pn.Column("<h2>Usage During the Day</h2>", day_select, Time_range_map, hour_select), 
-                                                     pn.Column("<h2>Users Per Operator</h2>", operator_select, Operators_maps)
+                                        main=[pn.Row(pn.Column("<h2>Usage During the Day</h2>", pn.Row(hour_select, day_select), Time_range_map), 
+                                                     pn.Column("<h2>Users Per Operator</h2>", pn.Row(operator_select), Operators_maps)
                                                     ),
-                                              pn.Row(pn.Column("<h2>Downlink Traffic Per Operator</h2>", operator_select, Traffic_maps),
-                                                     pn.Column("<h2>RSRP per Operator per Device</h2>", operator_select, aggregator_select, RSRP_values_maps)
+                                              pn.Row(pn.Column("<h2>Downlink Traffic Per Operator</h2>", pn.Row(operator_select), Traffic_maps),
+                                                     pn.Column("<h2>RSRP per Operator per Device</h2>", pn.Row(operator_select, aggregator_select, sizing_mode='stretch_both'), RSRP_values_maps)
                                                     )
                                              ]
                                        )
