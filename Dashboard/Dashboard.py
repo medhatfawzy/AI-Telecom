@@ -12,7 +12,7 @@ from holoviews.element.tiles import ESRI
 import colorcet as cc
 
 # using bokeh as a backend for holoviews, it works better than plotly wiith panel
-hv.extension('bokeh')
+hv.extension('bokeh', 'matplotlib')
 #--------------------------------------------------
 
 # The options for the operators and thier colour maps
@@ -21,12 +21,12 @@ AGGS = {"Average": pd.DataFrame.mean, "Minimum": pd.DataFrame.min, "Maximum":pd.
 PLOT_WIDTH = 900
 PLOT_HEIGHT= 700
 
-RSRP_data = pd.read_parquet("RSRP_data_viz.parq")
-Downlink_traffic = pd.read_parquet("Downlink_traffic.parq")
+RSRP_data = pd.read_parquet("./Data/RSRP_data_viz.parq")
+Downlink_traffic = pd.read_parquet("./Data/All_Downlink_traffic.parq")
 
 # Using the map tiles provided by Esri. OpenStreetMaps can be used as well
 esri = ESRI().opts(alpha=0.2, width=PLOT_WIDTH, height=PLOT_HEIGHT, bgcolor='black', xaxis=None, yaxis=None)
-# osm = OSM().redim(x="Longtitude", y="Latitude").opts(alpha=0.2, width=900, height=700, bgcolor='black')
+# osm = OSM().opts(alpha=0.2, width=900, height=700, bgcolor='black', xaxis=None, yaxis=None)
 
 def time_range_plot(hours_range, days_range):
     """Plots the users of all operators during the day and show the areas with high intensity"""
