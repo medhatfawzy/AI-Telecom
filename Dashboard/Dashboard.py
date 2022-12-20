@@ -1,5 +1,4 @@
 import pandas as pd
-from pandasql import sqldf
 # The server and widgets library
 import panel as pn
 # enabling panel backend
