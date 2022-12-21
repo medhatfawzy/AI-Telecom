@@ -7,6 +7,10 @@ cd Dashboard
 panel serve --show Dashboard.py
 ```
 
+The Dashboard consists of four plots and looks like this:
+<img src="./Dashboard/first_row.png"/>
+<img src="./Dashboard/second_row.png"/>
+
 The libraries used during the creation of this projects:
 - pandas
 - numpy
@@ -17,3 +21,5 @@ The libraries used during the creation of this projects:
 - datashader (This is used to plot these millions of points while preventing overplotting)
 - bokeh (This is used to render our plots (as backend))
 - fastparquet (This is a better format for a dataset, provides a smaller size and a fast read & write operations)
+
+The rest is mentioned in the requirments.txt file

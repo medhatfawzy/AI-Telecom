@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 # The server and widgets library
 import panel as pn
 # enabling panel backend
@@ -17,7 +18,7 @@ hv.extension('bokeh', 'matplotlib')
 
 # The options for the operators and thier colour maps
 COLORS = {"Operator A": cc.kr, "Operator B": cc.kg, "Operator C": cc.kb}
-AGGS = {"Average": pd.DataFrame.mean, "Minimum": pd.DataFrame.min, "Maximum":pd.DataFrame.max, "90th Percentile":pd.DataFrame.quantile}
+AGGS = {"Average": np.mean, "Minimum": np.min, "Maximum": np.max, "90th Percentile":pd.DataFrame.quantile}
 PLOT_WIDTH = 900
 PLOT_HEIGHT= 700
 
@@ -64,8 +65,8 @@ def traffic_plot(operator_name):
     if (len(df_operator) == 0 ):
         return esri
     operator_tiles =  hv.element.HexTiles(df_operator, kdims=["LocationLongitude", "LocationLatitude"], vdims=["TrafficVolume"])
-    operator_tiles.opts(cmap=COLORS[operator_name], alpha=0.8, cnorm="linear", tools=["hover"], width=PLOT_WIDTH, height=PLOT_HEIGHT, scale=(hv.dim('Count').norm()*0.5)+0.5)
-    return esri * operator_tiles
+    operator_tiles.opts(cmap=COLORS[operator_name], alpha=0.8, cnorm="eq_hist", tools=["hover"], width=PLOT_WIDTH, height=PLOT_HEIGHT, scale=(hv.dim('TrafficVolume').norm()*0.9)+0.3)
+    return (esri * operator_tiles).opts(hv.opts.HexTiles(aggregator=np.sum))
 
 def RSRP_bar_plot(operator_name, aggregator_method):
     """"Plots a bar chart of RSRP per device type per operator with an option to choose the aggregation method of RSRP (avg, min, max and 90th Percentile)."""
