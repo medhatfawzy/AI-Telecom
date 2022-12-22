@@ -99,7 +99,7 @@ template = pn.template.FastListTemplate(title="Telecom Analysis",
                                                      pn.Column("<h2>Users Per Operator</h2>", pn.Row(operator_select), Operators_maps)
                                                     ),
                                               pn.Row(pn.Column("<h2>Downlink Traffic Per Operator</h2>", pn.Row(operator_select), Traffic_maps),
-                                                     pn.Column("<h2>RSRP per Operator per Device</h2>", pn.Row(operator_select, aggregator_select, sizing_mode='stretch_both'), RSRP_values_maps)
+                                                     pn.Column("<h2>RSRP per Operator per Device</h2>", pn.Row(operator_select, aggregator_select), RSRP_values_maps)
                                                     )
                                              ]
                                        )
