@@ -12,7 +12,7 @@ from holoviews.element.tiles import ESRI
 # provides the color maps
 import colorcet as cc
 
-# using bokeh as a backend for holoviews, it works better than plotly wiith panel
+# using bokeh as a backend for holoviews, it works better than plotly with panel
 hv.extension('bokeh', 'matplotlib')
 #--------------------------------------------------
 
@@ -54,7 +54,7 @@ def operator_plot(operator_name):
     df_operator = RSRP_data[RSRP_data["RadioOperatorName"] == operator_name]
     if (len(df_operator) == 0 ):
         return esri
-    operator_points =  hv.Points(df_operator, kdims=["LocationLongitude", "LocationLatitude"])
+    operator_points =  hv.Points(df_operator, kdims=["LocationLongitude", "LocationLatitude"], vdims=["RSRP"])
     rastered = rasterize(operator_points).opts(cmap=COLORS[operator_name], cnorm="eq_hist",  width=PLOT_WIDTH, height=PLOT_HEIGHT)
     operator_highlight = inspect(rastered).opts(marker="o", size=10, fill_alpha=0, color='white', tools=["hover"])
     return esri * rastered * operator_highlight
@@ -65,8 +65,15 @@ def traffic_plot(operator_name):
     if (len(df_operator) == 0 ):
         return esri
     operator_tiles =  hv.element.HexTiles(df_operator, kdims=["LocationLongitude", "LocationLatitude"], vdims=["TrafficVolume"])
-    operator_tiles.opts(cmap=COLORS[operator_name], alpha=0.8, cnorm="eq_hist", tools=["hover"], width=PLOT_WIDTH, height=PLOT_HEIGHT, scale=(hv.dim('TrafficVolume').norm()*0.9)+0.3)
-    return (esri * operator_tiles).opts(hv.opts.HexTiles(aggregator=np.sum))
+    operator_tiles.opts(cmap=COLORS[operator_name],
+                        alpha=0.8, cnorm="eq_hist",
+                        tools=["hover"],
+                        aggregator=np.sum,
+                        width=PLOT_WIDTH,
+                        height=PLOT_HEIGHT,
+                        scale=(hv.dim('TrafficVolume').norm() * 0.9) + 0.3
+                       )
+    return esri * operator_tiles
 
 def RSRP_bar_plot(operator_name, aggregator_method):
     """"Plots a bar chart of RSRP per device type per operator with an option to choose the aggregation method of RSRP (avg, min, max and 90th Percentile)."""
@@ -95,11 +102,11 @@ aggregator_select = pn.widgets.Select(name="Aggregator Type:", options=list(AGGS
 RSRP_values_maps = pn.bind(RSRP_bar_plot, operator_name=operator_select, aggregator_method=aggregator_select)
 
 template = pn.template.FastListTemplate(title="Telecom Analysis",
-                                        main=[pn.Row(pn.Column("<h2>Usage During the Day</h2>", pn.Row(hour_select, day_select), Time_range_map), 
-                                                     pn.Column("<h2>Users Per Operator</h2>", pn.Row(operator_select), Operators_maps)
+                                        main=[pn.Row(pn.Column(pn.Row("<h3>Usage During the Day</h3>", pn.Row(hour_select, day_select)), Time_range_map ), 
+                                                     pn.Column(pn.Row("<h3>Users Per Operator</h3>", operator_select), Operators_maps)
                                                     ),
-                                              pn.Row(pn.Column("<h2>Downlink Traffic Per Operator</h2>", pn.Row(operator_select), Traffic_maps),
-                                                     pn.Column("<h2>RSRP per Operator per Device</h2>", pn.Row(operator_select, aggregator_select), RSRP_values_maps)
+                                              pn.Row(pn.Column(pn.Row("<h3>Downlink Traffic Per Operator</h3>", operator_select),  Traffic_maps),
+                                                     pn.Column(pn.Row("<h3>RSRP per Operator per Device</h3>", pn.Row(operator_select, aggregator_select)), RSRP_values_maps)
                                                     )
                                              ]
                                        )
