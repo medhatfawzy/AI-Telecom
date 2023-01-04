@@ -102,11 +102,11 @@ aggregator_select = pn.widgets.Select(name="Aggregator Type:", options=list(AGGS
 RSRP_values_maps = pn.bind(RSRP_bar_plot, operator_name=operator_select, aggregator_method=aggregator_select)
 
 template = pn.template.FastListTemplate(title="Telecom Analysis",
-                                        main=[pn.Row(pn.Column(pn.Row("<h3>Usage During the Day</h3>", pn.Row(hour_select, day_select)), Time_range_map ), 
+                                        main=[pn.Row(pn.Column(pn.Row("<h3>Usage During the Day</h3>", hour_select, day_select), Time_range_map ), 
                                                      pn.Column(pn.Row("<h3>Users Per Operator</h3>", operator_select), Operators_maps)
                                                     ),
                                               pn.Row(pn.Column(pn.Row("<h3>Downlink Traffic Per Operator</h3>", operator_select),  Traffic_maps),
-                                                     pn.Column(pn.Row("<h3>RSRP per Operator per Device</h3>", pn.Row(operator_select, aggregator_select)), RSRP_values_maps)
+                                                     pn.Column(pn.Row("<h3>RSRP per Operator per Device</h3>", operator_select, aggregator_select), RSRP_values_maps)
                                                     )
                                              ]
                                        )
